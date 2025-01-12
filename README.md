@@ -24,13 +24,17 @@ The **TodoList API** is a simple API created in GoLang using the Gin framework. 
 
 2. Navigate to the TodoList API folder:
     ```bash
-    cd API-Development/TodoList-API
+    cd API\ Development/TodoList\ API
     ```
 3. Run the server:
     ```bash
     go run main.go
     ```
-4. To add a task (POST):
+4. Access the local server at the following address:
+   ```bash
+   http://localhost:5050/tasks
+   ```
+5. To add a task (POST):
    ```bash
    curl http://localhost:5050/tasks \
     --include \
