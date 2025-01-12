@@ -1,36 +1,36 @@
 # GoLang Practice
 
-Este repositório contém projetos e práticas feitas com GoLang.
+This repository contains projects and practices done with GoLang.
 
-A intenção é praticar e desenvolver conhecimento sobre a linguagem, toda prática estará nesses repositório, projetos mais complexos estarão em repositórios separados.
+The intention is to practice and develop knowledge about the language. All practice will be in this repository, and more complex projects will be in separate repositories.
 
-Todo Projeto, mesmo que simples, será descrito nesse README.
+Every project, even if simple, will be described in this README.
 
-## Pasta: API Development - TodoList API
+## Folder: API Development - TodoList API
 
-A **TodoList API** é uma API simples criada em GoLang utilizando o framework Gin. Ela permite gerenciar uma lista de tarefas.
+The **TodoList API** is a simple API created in GoLang using the Gin framework. It allows managing a to-do list.
 
-### Funcionalidades
+### Features
 
-- **GET /tasks**: Lista todas as tarefas.
-- **POST /tasks**: Adiciona uma nova tarefa.
+- **GET /tasks**: Lists all tasks.
+- **POST /tasks**: Adds a new task.
 
-### Como Rodar o Projeto
+### How to Run the Project
 
-1. Clone o repositório:
+1. Clone the repository:
 
    ```bash
    git clone https://github.com/luizscolari/GoLang-Practice.git
 
-2. Navegue até a pasta TodoList API
+2. Navigate to the TodoList API folder:
     ```bash
     cd API-Development/TodoList-API
     ```
-3. Execute o servidor:
+3. Run the server:
     ```bash
     go run main.go
     ```
-4. Para adicionar uma tarefa (POST):
+4. To add a task (POST):
    ```bash
    curl http://localhost:5050/tasks \
     --include \
