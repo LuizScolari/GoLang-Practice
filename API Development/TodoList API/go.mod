@@ -1,4 +1,4 @@
-module API-Development
+module TodoList-API
 
 go 1.22.5
 
