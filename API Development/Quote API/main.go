@@ -7,29 +7,36 @@ import (
 	"net/http"
 )
 
-type Quote_dolar struct {
+type Quote_dollar struct {
 	Dolar_bid string `json:"bid"`
 	Dolar_ask string `json:"ask"`
-	Date      string `json:"date"`
+	Date      string `json:"create_date"`
 }
 
-func get_quote_dolar() (*Quote_dolar, error) {
+type Response struct {
+	Currency  string `json:"currency"`
+	Dolar_bid string `json:"bid"`
+	Dolar_ask string `json:"ask"`
+	Date      string `json:"create_date"`
+}
+
+func get_quote_dolar() (*Quote_dollar, error) {
 	url := "https://economia.awesomeapi.com.br/json/last/USD-BRL"
 
 	resp, err := http.Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("erro ao fazer a requisição: %v", err)
+		return nil, fmt.Errorf("error in the request: %v", err)
 	}
 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("resposta da api com código: %d", resp.StatusCode)
+		return nil, fmt.Errorf("api answer code: %d", resp.StatusCode)
 	}
 
-	var result map[string]Quote_dolar
+	var result map[string]Quote_dollar
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, fmt.Errorf("erro ao decodificar a resposar: %v", err)
+		return nil, fmt.Errorf("error in the codification: %v", err)
 	}
 
 	quote := result["USDBRL"]
@@ -43,19 +50,23 @@ func handlerOperation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "Application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"moeda":  "USD-BRL",
-		"compra": quote.Dolar_bid,
-		"venda":  quote.Dolar_ask,
-		"data":   quote.Date,
-	})
+	response := Response{
+		Currency:  "USD-BRL",
+		Dolar_bid: quote.Dolar_bid,
+		Dolar_ask: quote.Dolar_ask,
+		Date:      quote.Date,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, `{"error":"Error to get dollar quote"}`, http.StatusInternalServerError)
+	}
 }
 
 func main() {
 	http.HandleFunc("/quote/dollar", handlerOperation)
 
-	if err := http.ListenAndServe(":1000", nil); err != nil {
+	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatalf("Erro ao iniciar servidor: %v", err)
 	}
 }
