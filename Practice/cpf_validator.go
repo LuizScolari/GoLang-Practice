@@ -30,7 +30,6 @@ func cpf_validator(cpf string) {
 
 	var second_digit int
 	rest2 := sum2 % 11
-	fmt.Println(rest2)
 	if rest2 < 2 {
 		second_digit = 0
 	} else {
@@ -38,9 +37,7 @@ func cpf_validator(cpf string) {
 	}
 
 	first_digit_str := strconv.Itoa(first_digit)
-	fmt.Println(first_digit_str)
 	second_digit_str := strconv.Itoa(second_digit)
-	fmt.Println(second_digit_str)
 
 	if first_digit_str == string(cpf[9]) && second_digit_str == string(cpf[10]) {
 		fmt.Printf("the cpf is valid!")
