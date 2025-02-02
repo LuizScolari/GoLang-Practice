@@ -1,57 +1,57 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
-	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
+// Estrutura para os dados do formulário (deve ser igual ao frontend)
 type Datas struct {
-	Name    string `json:"name"`
-	Email   string `json:"email"`
-	Gender  string `json:"gender"`
-	Message string `json:"message"`
+	Name    string `json:"name" form:"name"`
+	Email   string `json:"email" form:"email"`
+	Gender  string `json:"gender" form:"gender"`
+	Message string `json:"message" form:"message"`
 }
 
-func handleFormSubmission(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "method not supported", http.StatusMethodNotAllowed)
-		return
-	}
+func main() {
+	router := gin.Default()
 
-	// Pega os dados do formulário
-	datas, err := parseForm(r)
-	if err != nil {
-		http.Error(w, "error: "+err.Error(), http.StatusBadRequest)
-		return
-	}
+	// Middleware para permitir CORS (compatível com o frontend)
+	router.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://127.0.0.1:5500")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(200)
+			return
+		}
+		c.Next()
+	})
 
-	err = saveDB(datas)
-	if err != nil {
-		fmt.Errorf("error to save in the db")
-	}
+	// Rota para receber o formulário
+	router.POST("/submit", handleFormSubmission)
 
-	w.Header().Set("Content-Typer", "application/json")
-	json.NewEncoder(w).Encode(datas)
-}
-
-func parseForm(r *http.Request) (Datas, error) {
-	err := r.ParseForm()
-	if err != nil {
-		return Datas{}, err
-	}
-
-	return Datas{
-		Name:    r.FormValue("name"),
-		Email:   r.FormValue("email"),
-		Gender:  r.FormValue("gender"),
-		Message: r.FormValue("message"),
-	}, nil
-}
-
-func server() {
-	http.HandleFunc("/submit", handleFormSubmission)
+	// Inicia o servidor
 	log.Println("Servidor rodando na porta 8080...")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	router.Run(":8080")
+}
+
+func handleFormSubmission(c *gin.Context) {
+	var datas Datas
+
+	// Extrai os dados do formulário HTML
+	if err := c.ShouldBind(&datas); err != nil {
+		c.JSON(400, gin.H{"error": "Dados inválidos: " + err.Error()})
+		return
+	}
+
+	// Salva no banco de dados
+	if err := saveDB(datas); err != nil {
+		c.JSON(500, gin.H{"error": "Erro ao salvar no banco de dados: " + err.Error()})
+		return
+	}
+
+	// Retorna os dados salvos como confirmação
+	c.JSON(200, datas)
 }

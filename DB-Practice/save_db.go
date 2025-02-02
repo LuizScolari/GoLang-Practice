@@ -16,13 +16,20 @@ type Datas2 struct {
 
 func saveDB(datas Datas) error {
 	// Conecta ao banco de dados
-	var database *gorm.DB = db.ConnectDB()
+	database := db.ConnectDB()
 
-	// Cria ou atualiza a estrutura da tabela "users" com base no modelo User
+	// Cria a tabela "datas2" se não existir
 	database.AutoMigrate(&Datas2{})
 
-	// Insere um novo registro no banco de dados
-	result := database.Create(&datas)
+	// Converte "Datas" (do formulário) para "Datas2" (do banco de dados)
+	dataToSave := Datas2{
+		Name:    datas.Name,
+		Email:   datas.Email,
+		Gender:  datas.Gender,
+		Message: datas.Message,
+	}
 
+	// Insere os dados no banco
+	result := database.Create(&dataToSave)
 	return result.Error
 }
