@@ -1,6 +1,10 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 type Scores struct {
 	Math    float64 `json:"math"`
@@ -13,16 +17,24 @@ type Result struct {
 }
 
 func calculateMedia(c *gin.Context) {
-
+	scores := Scores{
+		Math:    9,
+		English: 8,
+		Science: 10,
+	}
+	result := Result{
+		Media: (scores.Math + scores.English + scores.Science) / 3,
+	}
+	c.JSON(http.StatusOK, result)
 }
 
 func main() {
 
 	r := gin.Default()
 
-	r.POST("results", calculateMedia)
+	r.GET("/results", calculateMedia)
 
-	err := r.Run(".9090")
+	err := r.Run(":9090")
 	if err != nil {
 		return
 	}
